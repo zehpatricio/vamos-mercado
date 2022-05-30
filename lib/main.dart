@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vamos_mercado/product.dart';
 import 'package:vamos_mercado/widgets.dart';
+import 'package:vamos_mercado/add_product.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,18 +30,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var allInCar = false;
-
-  var products = [
+  List<Product> productsOutCar = [
     Product("Banana", 12),
     Product("Sabão em pó", 1.5, unityPrice: 12, measurementUnity: "kg"),
     Product("Leite", 2, measurementUnity: "kg")
   ];
 
-  void _addItems() {
+  List<Product> productsInCar = [];
+
+  void _addProd(Product product) {
     setState(() {
-      var product = Product("name", 1.3);
-      products.add(product);
+      productsOutCar.add(product);
     });
   }
 
@@ -54,11 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.checklist),
             tooltip: 'Remove products from car',
             onPressed: () {
-              allInCar = !allInCar;
               setState(() {
-                products.forEach((element) {
-                  element.inCar = allInCar;
-                });
+                // TODO: add confirmation dialog
+                productsOutCar.addAll(productsInCar);
+                productsInCar = [];
               });
             },
           )
@@ -69,27 +68,85 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: ListView.builder(
             itemBuilder: (ctx, index) {
-              var prod = products[index];
+              if (index == 0) {
+                return const Subtitle("Falta pegar");
+              }
+
+              index = index - 1;
+
+              if (index == productsOutCar.length) {
+                return const Subtitle("Já peguei");
+              }
+
+              late var prod;
+
+              if (index < (productsOutCar.length)) {
+                prod = productsOutCar[index];
+                prod.inCar = false;
+              } else {
+                index = index - (productsOutCar.length + 1);
+                prod = productsInCar[index];
+                prod.inCar = true;
+              }
 
               return ProductWidget(
                 prod,
                 (inCar) {
                   setState(() {
                     prod.inCar = inCar!;
-                    products.remove(prod);
-                    products.add(prod);
+                    if (prod.inCar) {
+                      productsOutCar.remove(prod);
+                      productsInCar.add(prod);
+                    } else {
+                      productsInCar.remove(prod);
+                      productsOutCar.add(prod);
+                    }
                   });
                 },
               );
             },
-            itemCount: products.length,
+            itemCount: productsOutCar.length + productsInCar.length + 2,
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addItems,
+        onPressed: () {
+          showGeneralDialog(
+              context: context,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return AddProductWidget(_addProd);
+              });
+        },
         tooltip: 'Add',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class Subtitle extends StatelessWidget {
+  final String text;
+
+  const Subtitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(height: 6),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 18),
+          ),
+          Container(height: 6),
+          Container(
+            height: 3,
+            color: Theme.of(context).bottomAppBarColor,
+          )
+        ],
       ),
     );
   }
