@@ -123,31 +123,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-class Subtitle extends StatelessWidget {
-  final String text;
-
-  const Subtitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(height: 6),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 18),
-          ),
-          Container(height: 6),
-          Container(
-            height: 3,
-            color: Theme.of(context).bottomAppBarColor,
-          )
-        ],
-      ),
-    );
-  }
-}

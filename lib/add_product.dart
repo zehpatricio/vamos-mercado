@@ -8,26 +8,46 @@ class AddProductWidget extends StatelessWidget {
   String? prodQuantity;
   String? prodMeasureUnity;
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  MeasureUnity mew = MeasureUnity(const ['Kg', 'Un', 'Lt']);
+
   AddProductWidget(this.addProd);
 
   @override
   Widget build(BuildContext context) {
     return DefaultDialog(
-      body_content: Row(
+      bodyContent: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AddProductForm(),
+          AddProductForm(nameController, quantityController, mew),
           Container(
             padding: const EdgeInsets.all(10),
             child: const FlutterLogo(size: 60),
           ),
         ],
       ),
+      confirm: () {
+        addProd(
+          Product(
+            nameController.text,
+            double.parse(quantityController.text),
+            measurementUnity: mew.value,
+          ),
+        );
+      },
     );
   }
 }
 
 class AddProductForm extends StatelessWidget {
+  TextEditingController emailController;
+  TextEditingController quantityController;
+  MeasureUnity measurementUnity;
+
+  AddProductForm(
+      this.emailController, this.quantityController, this.measurementUnity);
+
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -36,16 +56,16 @@ class AddProductForm extends StatelessWidget {
         children: [
           TextField(
             decoration: const InputDecoration(hintText: "Nome"),
-            // onChanged: (value) => prodName = value,
+            controller: emailController,
           ),
           Row(children: [
             Flexible(
                 child: TextField(
               decoration: const InputDecoration(hintText: "Quantidade"),
               keyboardType: TextInputType.number,
-              // onChanged: (value) => prodQuantity = value,
+              controller: quantityController,
             )),
-            MeasureUnity(['Kg', 'Un', 'Lt'])
+            measurementUnity
           ]),
         ],
       ),
@@ -54,9 +74,13 @@ class AddProductForm extends StatelessWidget {
 }
 
 class MeasureUnity extends StatefulWidget {
-  List<String> items;
+  final List<String> items;
 
-  MeasureUnity(this.items, {Key? key}) : super(key: key);
+  late String value;
+
+  MeasureUnity(this.items) {
+    value = items.first;
+  }
 
   @override
   State<MeasureUnity> createState() => _MeasureUnityState();
@@ -76,6 +100,7 @@ class _MeasureUnityState extends State<MeasureUnity> {
         onChanged: (String? newValue) {
           setState(() {
             dropdownValue = newValue!;
+            widget.value = dropdownValue!;
           });
         },
         items: widget.items.map<DropdownMenuItem<String>>((String value) {

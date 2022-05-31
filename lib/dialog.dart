@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:vamos_mercado/product.dart';
 import 'package:vamos_mercado/buttons.dart';
 
 class DefaultDialog extends StatelessWidget {
-  late Widget body_content;
+  final Widget bodyContent;
+  final Function confirm;
 
-  DefaultDialog({Key? key, required this.body_content}) : super(key: key);
+  const DefaultDialog(
+      {Key? key, required this.bodyContent, required this.confirm})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +17,11 @@ class DefaultDialog extends StatelessWidget {
         child: IntrinsicHeight(
           child: Column(
             children: [
-              _Body(body_content),
-              _BottomButtons(),
+              _Body(bodyContent),
+              _BottomButtons(() {
+                Navigator.of(context).pop();
+                confirm();
+              }),
             ],
           ),
         ),
@@ -26,17 +31,21 @@ class DefaultDialog extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
-  late Widget body_content;
+  final Widget bodyContent;
 
-  _Body(this.body_content);
+  const _Body(this.bodyContent);
 
   @override
   Widget build(BuildContext context) => IntrinsicHeight(
-        child: body_content,
+        child: bodyContent,
       );
 }
 
 class _BottomButtons extends StatelessWidget {
+  final VoidCallback? confirm;
+
+  const _BottomButtons(this.confirm);
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -45,10 +54,7 @@ class _BottomButtons extends StatelessWidget {
         CancelButton(),
         Container(width: 20),
         ElevatedButton(
-          onPressed: () {
-            // addProd(Product(prodName!, double.parse(prodQuantity!)));
-            // Navigator.of(context).pop();
-          },
+          onPressed: confirm,
           child: const Text("Adicionar"),
         )
       ],
