@@ -15,3 +15,18 @@ class CancelButton extends StatelessWidget {
     );
   }
 }
+
+class ConfirmButton extends StatelessWidget {
+  VoidCallback? confirm;
+  String text;
+
+  ConfirmButton(this.text, this.confirm);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: confirm,
+      child: Text(text),
+    );
+  }
+}

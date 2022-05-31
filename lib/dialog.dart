@@ -43,8 +43,9 @@ class _Body extends StatelessWidget {
 
 class _BottomButtons extends StatelessWidget {
   final VoidCallback? confirm;
+  final String text;
 
-  const _BottomButtons(this.confirm);
+  const _BottomButtons(this.confirm, {this.text = "Ok"});
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +54,19 @@ class _BottomButtons extends StatelessWidget {
       children: [
         CancelButton(),
         Container(width: 20),
-        ElevatedButton(
-          onPressed: confirm,
-          child: const Text("Adicionar"),
-        )
+        ConfirmButton(text, confirm),
       ],
     );
   }
+}
+
+void confirmDialog(BuildContext context, Function confirm) {
+  showGeneralDialog(
+      context: context,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return DefaultDialog(
+          bodyContent: Text('Texto'),
+          confirm: confirm,
+        );
+      });
 }

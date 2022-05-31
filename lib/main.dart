@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vamos_mercado/dialog.dart';
 import 'package:vamos_mercado/product.dart';
 import 'package:vamos_mercado/widgets.dart';
 import 'package:vamos_mercado/add_product.dart';
@@ -13,9 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vamos ao mercado',
+      title: 'Bora no mercado',
       theme: ThemeData.dark(),
-      home: const MyHomePage(title: 'Vamos ao mercado'),
+      home: const MyHomePage(title: 'Bora no mercado'),
     );
   }
 }
@@ -54,10 +55,11 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.checklist),
             tooltip: 'Remove products from car',
             onPressed: () {
-              setState(() {
-                // TODO: add confirmation dialog
-                productsOutCar.addAll(productsInCar);
-                productsInCar = [];
+              confirmDialog(context, 'Deseja reiniciar a lista?', () {
+                setState(() {
+                  productsOutCar.addAll(productsInCar);
+                  productsInCar = [];
+                });
               });
             },
           )
